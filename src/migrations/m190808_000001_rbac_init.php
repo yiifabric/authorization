@@ -98,6 +98,7 @@ class m190808_000001_rbac_init extends Migration
             'FOREIGN KEY ([[item_name]]) REFERENCES ' . $authManager->itemTable . ' ([[name]])' .
                 $this->buildFkClause('ON DELETE CASCADE', 'ON UPDATE CASCADE'),
         ], $tableOptions);
+        $this->createIndex('{{%idx-auth_assignment-user_id}}', $authManager->assignmentTable, 'user_id');
 
         if ($this->isMSSQL()) {
             $this->execute("CREATE TRIGGER {$schema}.trigger_auth_item_child
@@ -135,8 +136,6 @@ class m190808_000001_rbac_init extends Migration
                     END
             END;");
         }
-
-        $this->createIndex('{{%idx-auth_assignment-user_id}}', $authManager->assignmentTable, 'user_id');
     }
 
     /**
