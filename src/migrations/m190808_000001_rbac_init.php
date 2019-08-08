@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @link http://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -7,6 +7,7 @@
 
 use yii\base\InvalidConfigException;
 use yii\rbac\DbManager;
+use yii\db\Migration;
 
 /**
  * Initializes RBAC tables.
@@ -14,13 +15,13 @@ use yii\rbac\DbManager;
  * @author Alexander Kochetov <creocoder@gmail.com>
  * @since 2.0
  */
-class m140506_102106_rbac_init extends \yii\db\Migration
+class m190808_000001_rbac_init extends Migration
 {
     /**
      * @throws yii\base\InvalidConfigException
      * @return DbManager
      */
-    protected function getAuthManager()
+    protected function getAuthManager(): DbManager
     {
         $authManager = Yii::$app->getAuthManager();
         if (!$authManager instanceof DbManager) {
@@ -33,12 +34,12 @@ class m140506_102106_rbac_init extends \yii\db\Migration
     /**
      * @return bool
      */
-    protected function isMSSQL()
+    protected function isMSSQL(): bool
     {
         return $this->db->driverName === 'mssql' || $this->db->driverName === 'sqlsrv' || $this->db->driverName === 'dblib';
     }
 
-    protected function isOracle()
+    protected function isOracle(): bool
     {
         return $this->db->driverName === 'oci';
     }
@@ -54,8 +55,7 @@ class m140506_102106_rbac_init extends \yii\db\Migration
 
         $tableOptions = null;
         if ($this->db->driverName === 'mysql') {
-            // http://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci
-            $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
+            $tableOptions = 'ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci';
         }
 
         $this->createTable($authManager->ruleTable, [
@@ -155,7 +155,7 @@ class m140506_102106_rbac_init extends \yii\db\Migration
         $this->dropTable($authManager->ruleTable);
     }
 
-    protected function buildFkClause($delete = '', $update = '')
+    protected function buildFkClause($delete = '', $update = ''): string
     {
         if ($this->isMSSQL()) {
             return '';
