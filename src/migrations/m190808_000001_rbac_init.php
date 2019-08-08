@@ -140,6 +140,14 @@ class m190808_000001_rbac_init extends Migration
         $this->createIndex(
             'auth_assignment_user_id_idx', $authManager->assignmentTable, 'user_id'
         );
+
+
+        // Updates indexes without a prefix.
+        $this->dropIndex('auth_assignment_user_id_idx', $authManager->assignmentTable);
+        $this->createIndex('{{%idx-auth_assignment-user_id}}', $authManager->assignmentTable, 'user_id');
+
+        $this->dropIndex('idx-auth_item-type', $authManager->itemTable);
+        $this->createIndex('{{%idx-auth_item-type}}', $authManager->itemTable, 'type');
     }
 
     /**
