@@ -1,14 +1,14 @@
 {
-    "name": "yiifabric/template",
+    "name": "yiifabric/authorization",
     "type": "library",
     "description": "",
     "keywords": [],
-    "homepage": "https://github.com/yiifabric/template",
+    "homepage": "https://github.com/yiifabric/authorization",
     "license": "BSD-3-Clause",
     "support": {
-        "source": "https://github.com/yiifabric/template",
-        "issues": "https://github.com/yiifabric/template/issues",
-        "wiki": "https://github.com/yiifabric/template"
+        "source": "https://github.com/yiifabric/authorization",
+        "issues": "https://github.com/yiifabric/authorization/issues",
+        "wiki": "https://github.com/yiifabric/authorization"
     },
     "require": {
         "php": ">=7.2.0",
@@ -31,7 +31,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Yiifabric\\Template\\": "src"
+            "Yiifabric\\Authorization\\": "src"
         }
     },
     "extra": {
