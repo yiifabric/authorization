@@ -106,12 +106,12 @@ class DbManager extends BaseManager
      * Initializes the application component.
      * This method overrides the parent implementation by establishing the database connection.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
-        $this->db = Instance::ensure($this->db, Connection::className());
+        $this->db = Instance::ensure($this->db, Connection::class);
         if ($this->cache !== null) {
-            $this->cache = Instance::ensure($this->cache, 'yii\caching\CacheInterface');
+            $this->cache = Instance::ensure($this->cache, CacheInterface::class);
         }
     }
 
@@ -120,7 +120,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function checkAccess($userId, $permissionName, $params = [])
+    public function checkAccess($userId, $permissionName, $params = []): bool
     {
         if (isset($this->_checkAccessAssignments[(string) $userId])) {
             $assignments = $this->_checkAccessAssignments[(string) $userId];
@@ -152,9 +152,10 @@ class DbManager extends BaseManager
      * which holds the value of `$userId`.
      * @param Assignment[] $assignments the assignments to the specified user
      * @return bool whether the operations can be performed by the user.
+     * @throws \yii\base\InvalidConfigException
      * @since 2.0.3
      */
-    protected function checkAccessFromCache($user, $itemName, $params, $assignments)
+    protected function checkAccessFromCache($user, $itemName, $params, $assignments): bool
     {
         if (!isset($this->items[$itemName])) {
             return false;
@@ -194,8 +195,9 @@ class DbManager extends BaseManager
      * which holds the value of `$userId`.
      * @param Assignment[] $assignments the assignments to the specified user
      * @return bool whether the operations can be performed by the user.
+     * @throws \yii\base\InvalidConfigException
      */
-    protected function checkAccessRecursive($user, $itemName, $params, $assignments)
+    protected function checkAccessRecursive($user, $itemName, $params, $assignments): bool
     {
         if (($item = $this->getItem($itemName)) === null) {
             return false;
@@ -254,7 +256,7 @@ class DbManager extends BaseManager
      * The default implementation will return false for SQLite database and true for all other databases.
      * @return bool whether the database supports cascading update and delete.
      */
-    protected function supportsCascadeUpdate()
+    protected function supportsCascadeUpdate(): bool
     {
         return strncmp($this->db->getDriverName(), 'sqlite', 6) !== 0;
     }
@@ -262,7 +264,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    protected function addItem($item)
+    protected function addItem($item): bool
     {
         $time = time();
         if ($item->createdAt === null) {
@@ -290,7 +292,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    protected function removeItem($item)
+    protected function removeItem($item): bool
     {
         if (!$this->supportsCascadeUpdate()) {
             $this->db->createCommand()
@@ -313,7 +315,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    protected function updateItem($name, $item)
+    protected function updateItem($name, $item): bool
     {
         if ($item->name !== $name && !$this->supportsCascadeUpdate()) {
             $this->db->createCommand()
@@ -348,7 +350,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    protected function addRule($rule)
+    protected function addRule($rule): bool
     {
         $time = time();
         if ($rule->createdAt === null) {
@@ -373,7 +375,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    protected function updateRule($name, $rule)
+    protected function updateRule($name, $rule): bool
     {
         if ($rule->name !== $name && !$this->supportsCascadeUpdate()) {
             $this->db->createCommand()
@@ -400,7 +402,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    protected function removeRule($rule)
+    protected function removeRule($rule): bool
     {
         if (!$this->supportsCascadeUpdate()) {
             $this->db->createCommand()
@@ -420,7 +422,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    protected function getItems($type)
+    protected function getItems($type): array
     {
         $query = (new Query())
             ->from($this->itemTable)
