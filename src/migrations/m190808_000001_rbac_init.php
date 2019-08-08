@@ -78,7 +78,7 @@ class m190808_000001_rbac_init extends Migration
             'FOREIGN KEY ([[rule_name]]) REFERENCES ' . $authManager->ruleTable . ' ([[name]])' .
                 $this->buildFkClause('ON DELETE SET NULL', 'ON UPDATE CASCADE'),
         ], $tableOptions);
-        $this->createIndex('idx-auth_item-type', $authManager->itemTable, 'type');
+        $this->createIndex('{{%idx-auth_item-type}}', $authManager->itemTable, 'type');
 
         $this->createTable($authManager->itemChildTable, [
             'parent' => $this->string(64)->notNull(),
@@ -136,18 +136,7 @@ class m190808_000001_rbac_init extends Migration
             END;");
         }
 
-        // Adds index on `user_id` column in `auth_assignment` table for performance reasons.
-        $this->createIndex(
-            'auth_assignment_user_id_idx', $authManager->assignmentTable, 'user_id'
-        );
-
-
-        // Updates indexes without a prefix.
-        $this->dropIndex('auth_assignment_user_id_idx', $authManager->assignmentTable);
         $this->createIndex('{{%idx-auth_assignment-user_id}}', $authManager->assignmentTable, 'user_id');
-
-        $this->dropIndex('idx-auth_item-type', $authManager->itemTable);
-        $this->createIndex('{{%idx-auth_item-type}}', $authManager->itemTable, 'type');
     }
 
     /**
