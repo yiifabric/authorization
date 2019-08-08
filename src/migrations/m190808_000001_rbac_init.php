@@ -135,6 +135,11 @@ class m190808_000001_rbac_init extends Migration
                     END
             END;");
         }
+
+        // Adds index on `user_id` column in `auth_assignment` table for performance reasons.
+        $this->createIndex(
+            'auth_assignment_user_id_idx', $authManager->assignmentTable, 'user_id'
+        );
     }
 
     /**
