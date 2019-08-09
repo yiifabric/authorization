@@ -5,7 +5,7 @@ use yii\log\Dispatcher as LogDispatcher;
 use yii\i18n\Formatter as I18NFormatter;
 use yii\i18n\I18N;
 use yii\caching\FileCache;
-use yii\rbac\DbManager;
+use Yiifabric\Authorization\DbManager;
 
 $params = require __DIR__ . '/params-test.php';
 

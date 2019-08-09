@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Yiifabric\Template\Tests;
+namespace Yiifabric\Authorization\Tests;
 
 use ReflectionClass;
 use Yii;

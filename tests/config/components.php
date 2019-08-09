@@ -9,7 +9,7 @@ use yii\i18n\I18N;
 use yii\i18n\MessageFormatter;
 use yii\i18n\PhpMessageSource;
 use yii\caching\FileCache;
-use yii\rbac\DbManager;
+use Yiifabric\Authorization\DbManager;
 use yii\web\ErrorHandler as WebErrorHandler;
 use yii\console\ErrorHandler as ConsoleErrorHandler;
 
