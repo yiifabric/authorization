@@ -1,57 +1,52 @@
-/**
- * Database schema required by \yii\rbac\DbManager.
- *
- * @author Qiang Xue <qiang.xue@gmail.com>
- * @author Alexander Kochetov <creocoder@gmail.com>
- * @link http://www.yiiframework.com/
- * @copyright 2008 Yii Software LLC
- * @license http://www.yiiframework.com/license/
- * @since 2.0
- */
+SET FOREIGN_KEY_CHECKS = 0;
 
-drop table if exists `auth_assignment`;
-drop table if exists `auth_item_child`;
-drop table if exists `auth_item`;
-drop table if exists `auth_rule`;
-
-create table `auth_rule`
+DROP TABLE IF EXISTS `auth_rule`;
+CREATE TABLE `auth_rule`
 (
-   `name`                 varchar(64) not null,
-   `data`                 blob,
-   `created_at`           integer,
-   `updated_at`           integer,
-    primary key (`name`)
-) engine InnoDB;
+  `name`       varchar(64) NOT NULL,
+  `data`       blob,
+  `created_at` int(11) DEFAULT NULL,
+  `updated_at` int(11) DEFAULT NULL,
+  PRIMARY KEY (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-create table `auth_item`
+DROP TABLE IF EXISTS `auth_item`;
+CREATE TABLE `auth_item`
 (
-   `name`                 varchar(64) not null,
-   `type`                 smallint not null,
-   `description`          text,
-   `rule_name`            varchar(64),
-   `data`                 blob,
-   `created_at`           integer,
-   `updated_at`           integer,
-   primary key (`name`),
-   foreign key (`rule_name`) references `auth_rule` (`name`) on delete set null on update cascade,
-   key `type` (`type`)
-) engine InnoDB;
+  `name`        varchar(64) NOT NULL,
+  `type`        tinyint(1)  NOT NULL,
+  `description` varchar(192) DEFAULT NULL,
+  `external_id` int(11)      DEFAULT NULL,
+  `attached_id` int(11)      DEFAULT NULL,
+  `rule_name`   varchar(64)  DEFAULT NULL,
+  `data`        blob,
+  `created_at`  int(11)      DEFAULT NULL,
+  `updated_at`  int(11)      DEFAULT NULL,
+  PRIMARY KEY (`name`),
+  KEY `idx-auth_item-type` (`type`),
+  FOREIGN KEY `fk-auth_item-rule_name` (`rule_name`) REFERENCES `auth_rule` (`name`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-create table `auth_item_child`
+DROP TABLE IF EXISTS `auth_item_child`;
+CREATE TABLE `auth_item_child`
 (
-   `parent`               varchar(64) not null,
-   `child`                varchar(64) not null,
-   primary key (`parent`, `child`),
-   foreign key (`parent`) references `auth_item` (`name`) on delete cascade on update cascade,
-   foreign key (`child`) references `auth_item` (`name`) on delete cascade on update cascade
-) engine InnoDB;
+  `parent` varchar(64) NOT NULL,
+  `child`  varchar(64) NOT NULL,
+  PRIMARY KEY (`parent`, `child`),
+  FOREIGN KEY (`parent`) REFERENCES `auth_item` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY `fk-auth_item_child-child` (`child`) REFERENCES `auth_item` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-create table `auth_assignment`
+DROP TABLE IF EXISTS  `auth_assignment`;
+CREATE TABLE `auth_assignment`
 (
-   `item_name`            varchar(64) not null,
-   `user_id`              varchar(64) not null,
-   `created_at`           integer,
-   primary key (`item_name`, `user_id`),
-   foreign key (`item_name`) references `auth_item` (`name`) on delete cascade on update cascade,
-   key `auth_assignment_user_id_idx` (`user_id`)
-) engine InnoDB;
+    `item_name`  varchar(64) NOT NULL,
+    `user_id`    varchar(64) NOT NULL,
+    `created_at` int(11) DEFAULT NULL,
+    PRIMARY KEY (`item_name`, `user_id`),
+    KEY `idx-auth_assignment-user_id` (`user_id`),
+    FOREIGN KEY (`item_name`) REFERENCES `auth_item` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+SET FOREIGN_KEY_CHECKS = 1;
