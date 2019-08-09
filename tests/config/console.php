@@ -21,14 +21,10 @@ $config = [
         'migrate' => [
             'class' => MigrateController::class,
             // 对于不含命名空间的迁移，需要使用migrationPath来指定路径
-            'migrationPath' => [
-                '@yii/rbac/migrations',
-                '@yii/i18n/migrations',
-            ],
+            'migrationPath' => [],
             // 对于含有命名空间的迁移，需要使用migrationNamespaces指定对应的命名空间
             'migrationNamespaces' => [
-                'app\migrations',
-                'yii\queue\db\migrations',
+                'Yiifabric\Authorization\Migrations',
             ],
         ],
         // Fixture generation command line.
