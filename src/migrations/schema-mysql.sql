@@ -34,7 +34,7 @@ CREATE TABLE `auth_item_child`
   `child`  varchar(64) NOT NULL,
   PRIMARY KEY (`parent`, `child`),
   FOREIGN KEY (`parent`) REFERENCES `auth_item` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
-  FOREIGN KEY `fk-auth_item_child-child` (`child`) REFERENCES `auth_item` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
+  FOREIGN KEY `fk_auth_item_child_child` (`child`) REFERENCES `auth_item` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=`utf8mb4` COLLATE=`utf8mb4_unicode_ci`;
 
 DROP TABLE IF EXISTS `auth_assignment`;
@@ -44,6 +44,7 @@ CREATE TABLE `auth_assignment`
   `user_id`    varchar(64) NOT NULL,
   `created_at` int(11) DEFAULT NULL,
   PRIMARY KEY (`item_name`, `user_id`),
+  KEY `idx_auth_assignment_user_id` (`user_id`),
   FOREIGN KEY (`item_name`) REFERENCES `auth_item` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=`utf8mb4` COLLATE=`utf8mb4_unicode_ci`;
 
