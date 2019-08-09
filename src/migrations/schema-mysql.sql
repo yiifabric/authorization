@@ -23,8 +23,8 @@ CREATE TABLE `auth_item`
   `created_at`  int(11)      DEFAULT NULL,
   `updated_at`  int(11)      DEFAULT NULL,
   PRIMARY KEY (`name`),
-  KEY `idx-auth_item-type` (`type`),
-  FOREIGN KEY `fk-auth_item-rule_name` (`rule_name`) REFERENCES `auth_rule` (`name`) ON DELETE SET NULL ON UPDATE CASCADE
+  KEY `idx_auth_item_type` (`type`),
+  FOREIGN KEY `fk_auth_item_rule_name` (`rule_name`) REFERENCES `auth_rule` (`name`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=`utf8mb4` COLLATE=`utf8mb4_unicode_ci`;
 
 DROP TABLE IF EXISTS `auth_item_child`;
