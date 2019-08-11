@@ -17,6 +17,8 @@ class TestCase extends \PHPUnit\Framework\TestCase
         parent::setUp();
 
         $this->mockApplication();
+
+        $this->truncateAll();
     }
 
     /**
@@ -73,5 +75,15 @@ class TestCase extends \PHPUnit\Framework\TestCase
         $rMethod->setAccessible(false);
 
         return $invoked;
+    }
+
+    protected function truncateAll(): void
+    {
+        Yii::$app->db->createCommand()->checkIntegrity(false)->execute();
+        Yii::$app->db->createCommand()->truncateTable('auth_item')->execute();
+        Yii::$app->db->createCommand()->truncateTable('auth_item_child')->execute();
+        Yii::$app->db->createCommand()->truncateTable('auth_assignment')->execute();
+        Yii::$app->db->createCommand()->truncateTable('auth_rule')->execute();
+        Yii::$app->db->createCommand()->checkIntegrity(true)->execute();
     }
 }
