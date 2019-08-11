@@ -74,9 +74,11 @@ interface ManagerInterface extends CheckAccessInterface
      * Returns the roles that are assigned to the user via [[assign()]].
      * Note that child roles that are not assigned directly to the user will not be returned.
      * @param string|int $userId the user ID (see [[\yii\web\User::id]])
+     * @param int|null $externalId
+     * @param int|null $attachedId
      * @return Role[] all roles directly assigned to the user. The array is indexed by the role names.
      */
-    public function getRolesByUser($userId);
+    public function getRolesByUser($userId, ?int $externalId = null, ?int $attachedId = null): array;
 
     /**
      * Returns child roles of the role specified. Depth isn't limited.
@@ -104,9 +106,11 @@ interface ManagerInterface extends CheckAccessInterface
     /**
      * Returns all permissions that the specified role represents.
      * @param string $roleName the role name
+     * @param int|null $externalId
+     * @param int|null $attachedId
      * @return Permission[] all permissions that the role represents. The array is indexed by the permission names.
      */
-    public function getPermissionsByRole($roleName);
+    public function getPermissionsByRole(string $roleName, ?int $externalId = null, ?int $attachedId = null): array;
 
     /**
      * Returns all permissions that the user has.
@@ -230,30 +234,7 @@ interface ManagerInterface extends CheckAccessInterface
     public function getUserIdsByRole($roleName);
 
     /**
-     * Removes all authorization data, including roles, permissions, rules, and assignments.
-     */
-    public function removeAll();
-
-    /**
-     * Removes all permissions.
-     * All parent child relations will be adjusted accordingly.
-     */
-    public function removeAllPermissions();
-
-    /**
-     * Removes all roles.
-     * All parent child relations will be adjusted accordingly.
-     */
-    public function removeAllRoles();
-
-    /**
-     * Removes all rules.
-     * All roles and permissions which have rules will be adjusted accordingly.
-     */
-    public function removeAllRules();
-
-    /**
      * Removes all role assignments.
      */
-    public function removeAllAssignments();
+    public function removeAllAssignments(): void;
 }

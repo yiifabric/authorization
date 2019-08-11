@@ -5,6 +5,9 @@
  * @license http://www.yiiframework.com/license/
  */
 
+namespace Yiifabric\Authorization\Migrations;
+
+use Yii;
 use yii\base\InvalidConfigException;
 use yii\rbac\DbManager;
 use yii\db\Migration;
@@ -68,8 +71,10 @@ class m190808_000001_rbac_init extends Migration
 
         $this->createTable($authManager->itemTable, [
             'name' => $this->string(64)->notNull(),
-            'type' => $this->smallInteger()->notNull(),
-            'description' => $this->text(),
+            'type' => $this->tinyInteger()->notNull(),
+            'external_id' => $this->integer()->null(),
+            'attached_id' => $this->integer()->null(),
+            'description' => $this->string(192),
             'rule_name' => $this->string(64),
             'data' => $this->binary(),
             'created_at' => $this->integer(),

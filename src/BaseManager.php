@@ -37,24 +37,30 @@ abstract class BaseManager extends Component implements ManagerInterface
     /**
      * Returns the named auth item.
      * @param string $name the auth item name.
+     * @param int|null $externalId
+     * @param int|null $attachedId
      * @return Item the auth item corresponding to the specified name. Null is returned if no such item.
      */
-    abstract protected function getItem($name);
+    abstract protected function getItem(string $name, ?int $externalId = null, ?int $attachedId = null): ?Item;
 
     /**
      * Returns the items of the specified type.
      * @param int $type the auth item type (either [[Item::TYPE_ROLE]] or [[Item::TYPE_PERMISSION]]
+     * @param int|null $externalId
+     * @param int|null $attachedId
      * @return Item[] the auth items of the specified type.
      */
-    abstract protected function getItems($type);
+    abstract protected function getItems(int $type, ?int $externalId = null, ?int $attachedId = null): array;
 
     /**
      * Adds an auth item to the RBAC system.
      * @param Item $item the item to add
+     * @param int|null $externalId
+     * @param int|null $attachedId
      * @return bool whether the auth item is successfully added to the system
      * @throws \Exception if data validation or saving fails (such as the name of the role or permission is not unique)
      */
-    abstract protected function addItem($item);
+    abstract protected function addItem(Item $item, ?int $externalId = null, ?int $attachedId = null): bool;
 
     /**
      * Adds a rule to the RBAC system.
@@ -67,10 +73,12 @@ abstract class BaseManager extends Component implements ManagerInterface
     /**
      * Removes an auth item from the RBAC system.
      * @param Item $item the item to remove
+     * @param int|null $externalId
+     * @param int|null $attachedId
      * @return bool whether the role or permission is successfully removed
      * @throws \Exception if data validation or saving fails (such as the name of the role or permission is not unique)
      */
-    abstract protected function removeItem($item);
+    abstract protected function removeItem(Item $item, ?int $externalId = null, ?int $attachedId = null): bool;
 
     /**
      * Removes a rule from the RBAC system.
@@ -87,7 +95,7 @@ abstract class BaseManager extends Component implements ManagerInterface
      * @return bool whether the auth item is successfully updated
      * @throws \Exception if data validation or saving fails (such as the name of the role or permission is not unique)
      */
-    abstract protected function updateItem($name, $item);
+    abstract protected function updateItem(string $name, Item $item, ?int $externalId = null, ?int $attachedId = null): bool;
 
     /**
      * Updates a rule to the RBAC system.
