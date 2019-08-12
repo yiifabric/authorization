@@ -190,7 +190,7 @@ abstract class BaseManager extends Component implements ManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getRole($name): ?Item
+    public function getRole($name): ?Role
     {
         $item = $this->getItem($name);
         return ($item instanceof Item) && $item->type == Item::TYPE_ROLE ? $item : null;
@@ -199,7 +199,7 @@ abstract class BaseManager extends Component implements ManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getPermission($name): ?Item
+    public function getPermission($name): ?Permission
     {
         $item = $this->getItem($name);
         return $item instanceof Item && $item->type == Item::TYPE_PERMISSION ? $item : null;
@@ -263,7 +263,7 @@ abstract class BaseManager extends Component implements ManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getPermissions()
+    public function getPermissions(): array
     {
         return $this->getItems(Item::TYPE_PERMISSION);
     }
