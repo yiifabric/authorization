@@ -7,7 +7,6 @@
 
 namespace Yiifabric\Authorization;
 
-use Yii;
 use yii\base\BaseObject;
 
 /**

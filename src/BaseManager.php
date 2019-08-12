@@ -7,6 +7,8 @@
 
 namespace Yiifabric\Authorization;
 
+use Closure;
+use Yii;
 use yii\base\Component;
 use yii\base\InvalidArgumentException;
 use yii\base\InvalidConfigException;
@@ -19,6 +21,8 @@ use yii\base\InvalidValueException;
  *
  * @property Role[] $defaultRoleInstances Default roles. The array is indexed by the role names. This property
  * is read-only.
+ * @property array|Item[] $roles
+ * @property array|Item[] $permissions
  * @property string[] $defaultRoles Default roles. Note that the type of this property differs in getter and
  * setter. See [[getDefaultRoles()]] and [[setDefaultRoles()]] for details.
  *
@@ -68,7 +72,7 @@ abstract class BaseManager extends Component implements ManagerInterface
      * @return bool whether the rule is successfully added to the system
      * @throws \Exception if data validation or saving fails (such as the name of the rule is not unique)
      */
-    abstract protected function addRule($rule);
+    abstract protected function addRule($rule): bool;
 
     /**
      * Removes an auth item from the RBAC system.
@@ -86,14 +90,17 @@ abstract class BaseManager extends Component implements ManagerInterface
      * @return bool whether the rule is successfully removed
      * @throws \Exception if data validation or saving fails (such as the name of the rule is not unique)
      */
-    abstract protected function removeRule($rule);
+    abstract protected function removeRule($rule): bool;
 
     /**
      * Updates an auth item in the RBAC system.
-     * @param string $name the name of the item being updated
-     * @param Item $item the updated item
+     *
+     * @param string   $name the name of the item being updated
+     * @param Item     $item the updated item
+     * @param int|null $externalId
+     * @param int|null $attachedId
+     *
      * @return bool whether the auth item is successfully updated
-     * @throws \Exception if data validation or saving fails (such as the name of the role or permission is not unique)
      */
     abstract protected function updateItem(string $name, Item $item, ?int $externalId = null, ?int $attachedId = null): bool;
 
@@ -104,12 +111,12 @@ abstract class BaseManager extends Component implements ManagerInterface
      * @return bool whether the rule is successfully updated
      * @throws \Exception if data validation or saving fails (such as the name of the rule is not unique)
      */
-    abstract protected function updateRule($name, $rule);
+    abstract protected function updateRule($name, $rule): bool;
 
     /**
      * {@inheritdoc}
      */
-    public function createRole($name)
+    public function createRole($name): Role
     {
         $role = new Role();
         $role->name = $name;
@@ -119,7 +126,7 @@ abstract class BaseManager extends Component implements ManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function createPermission($name)
+    public function createPermission($name): Permission
     {
         $permission = new Permission();
         $permission->name = $name;
@@ -129,11 +136,11 @@ abstract class BaseManager extends Component implements ManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function add($object)
+    public function add($object): bool
     {
         if ($object instanceof Item) {
             if ($object->ruleName && $this->getRule($object->ruleName) === null) {
-                $rule = \Yii::createObject($object->ruleName);
+                $rule = Yii::createObject($object->ruleName);
                 $rule->name = $object->ruleName;
                 $this->addRule($rule);
             }
@@ -149,7 +156,7 @@ abstract class BaseManager extends Component implements ManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function remove($object)
+    public function remove($object): bool
     {
         if ($object instanceof Item) {
             return $this->removeItem($object);
@@ -163,11 +170,11 @@ abstract class BaseManager extends Component implements ManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function update($name, $object)
+    public function update($name, $object): bool
     {
         if ($object instanceof Item) {
             if ($object->ruleName && $this->getRule($object->ruleName) === null) {
-                $rule = \Yii::createObject($object->ruleName);
+                $rule = Yii::createObject($object->ruleName);
                 $rule->name = $object->ruleName;
                 $this->addRule($rule);
             }
@@ -183,16 +190,16 @@ abstract class BaseManager extends Component implements ManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getRole($name)
+    public function getRole($name): ?Item
     {
         $item = $this->getItem($name);
-        return $item instanceof Item && $item->type == Item::TYPE_ROLE ? $item : null;
+        return ($item instanceof Item) && $item->type == Item::TYPE_ROLE ? $item : null;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getPermission($name)
+    public function getPermission($name): ?Item
     {
         $item = $this->getItem($name);
         return $item instanceof Item && $item->type == Item::TYPE_PERMISSION ? $item : null;
@@ -201,7 +208,7 @@ abstract class BaseManager extends Component implements ManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getRoles()
+    public function getRoles(): array
     {
         return $this->getItems(Item::TYPE_ROLE);
     }
@@ -217,8 +224,8 @@ abstract class BaseManager extends Component implements ManagerInterface
     {
         if (is_array($roles)) {
             $this->defaultRoles = $roles;
-        } elseif ($roles instanceof \Closure) {
-            $roles = call_user_func($roles);
+        } elseif ($roles instanceof Closure) {
+            $roles = $roles();
             if (!is_array($roles)) {
                 throw new InvalidValueException('Default roles closure must return an array');
             }
@@ -233,7 +240,7 @@ abstract class BaseManager extends Component implements ManagerInterface
      * @return string[] default roles
      * @since 2.0.14
      */
-    public function getDefaultRoles()
+    public function getDefaultRoles(): array
     {
         return $this->defaultRoles;
     }
@@ -243,7 +250,7 @@ abstract class BaseManager extends Component implements ManagerInterface
      * @since 2.0.12
      * @return Role[] default roles. The array is indexed by the role names
      */
-    public function getDefaultRoleInstances()
+    public function getDefaultRoleInstances(): array
     {
         $result = [];
         foreach ($this->defaultRoles as $roleName) {
@@ -274,7 +281,7 @@ abstract class BaseManager extends Component implements ManagerInterface
      * @return bool the return value of [[Rule::execute()]]. If the auth item does not specify a rule, true will be returned.
      * @throws InvalidConfigException if the auth item has an invalid rule.
      */
-    protected function executeRule($user, $item, $params)
+    protected function executeRule($user, $item, $params): bool
     {
         if ($item->ruleName === null) {
             return true;
@@ -294,7 +301,7 @@ abstract class BaseManager extends Component implements ManagerInterface
      * @return bool whether array of $assignments is empty and [[defaultRoles]] property is empty as well
      * @since 2.0.11
      */
-    protected function hasNoAssignments(array $assignments)
+    protected function hasNoAssignments(array $assignments): bool
     {
         return empty($assignments) && empty($this->defaultRoles);
     }

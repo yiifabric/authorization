@@ -28,7 +28,7 @@ class ActionRule extends Rule
     private $somePrivateProperty;
     protected $someProtectedProperty;
 
-    public function execute($user, $item, $params)
+    public function execute($user, $item, $params): bool
     {
         return $this->action === 'all' || $this->action === $params['action'];
     }

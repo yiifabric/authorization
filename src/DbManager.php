@@ -441,7 +441,7 @@ class DbManager extends BaseManager
      * @param array $row the data from the auth item table
      * @return Item the populated auth item instance (either Role or Permission)
      */
-    protected function populateItem($row)
+    protected function populateItem($row): Item
     {
         $class = $row['type'] == Item::TYPE_PERMISSION ? Permission::class : Role::class;
 
@@ -487,7 +487,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function getChildRoles($roleName)
+    public function getChildRoles($roleName): array
     {
         $role = $this->getRole($roleName);
 
@@ -536,7 +536,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function getPermissionsByUser($userId)
+    public function getPermissionsByUser($userId): array
     {
         if ($this->isEmptyUserId($userId)) {
             return [];
@@ -614,7 +614,7 @@ class DbManager extends BaseManager
      * @return array the children list. Each array key is a parent item name,
      * and the corresponding array value is a list of child item names.
      */
-    protected function getChildrenList()
+    protected function getChildrenList(): array
     {
         $query = (new Query())->from($this->itemChildTable);
         $parents = [];
@@ -631,7 +631,7 @@ class DbManager extends BaseManager
      * @param array $childrenList the child list built via [[getChildrenList()]]
      * @param array $result the children and grand children (in array keys)
      */
-    protected function getChildrenRecursive($name, $childrenList, &$result)
+    protected function getChildrenRecursive($name, $childrenList, &$result): void
     {
         if (isset($childrenList[$name])) {
             foreach ($childrenList[$name] as $child) {
@@ -644,7 +644,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function getRule($name)
+    public function getRule($name): ?Rule
     {
         if ($this->rules !== null) {
             return isset($this->rules[$name]) ? $this->rules[$name] : null;
@@ -668,7 +668,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function getRules()
+    public function getRules(): array
     {
         if ($this->rules !== null) {
             return $this->rules;
@@ -691,7 +691,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function getAssignment($roleName, $userId)
+    public function getAssignment($roleName, $userId): ?Assignment
     {
         if ($this->isEmptyUserId($userId)) {
             return null;
@@ -715,7 +715,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function getAssignments($userId)
+    public function getAssignments($userId): array
     {
         if ($this->isEmptyUserId($userId)) {
             return [];
@@ -741,7 +741,7 @@ class DbManager extends BaseManager
      * {@inheritdoc}
      * @since 2.0.8
      */
-    public function canAddChild($parent, $child)
+    public function canAddChild($parent, $child): bool
     {
         return !$this->detectLoop($parent, $child);
     }
@@ -749,7 +749,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function addChild($parent, $child)
+    public function addChild($parent, $child): bool
     {
         if ($parent->name === $child->name) {
             throw new InvalidArgumentException("Cannot add '{$parent->name}' as a child of itself.");
@@ -775,7 +775,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function removeChild($parent, $child)
+    public function removeChild($parent, $child): bool
     {
         $result = $this->db->createCommand()
             ->delete($this->itemChildTable, ['parent' => $parent->name, 'child' => $child->name])
@@ -789,7 +789,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function removeChildren($parent)
+    public function removeChildren($parent): bool
     {
         $result = $this->db->createCommand()
             ->delete($this->itemChildTable, ['parent' => $parent->name])
@@ -803,7 +803,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function hasChild($parent, $child)
+    public function hasChild($parent, $child): bool
     {
         return (new Query())
             ->from($this->itemChildTable)
@@ -814,7 +814,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function getChildren($name)
+    public function getChildren($name) :array
     {
         $query = (new Query())
             ->select(['name', 'type', 'description', 'rule_name', 'data', 'created_at', 'updated_at'])
@@ -835,7 +835,7 @@ class DbManager extends BaseManager
      * @param Item $child the child item to be added to the hierarchy
      * @return bool whether a loop exists
      */
-    protected function detectLoop($parent, $child)
+    protected function detectLoop($parent, $child): bool
     {
         if ($child->name === $parent->name) {
             return true;
@@ -852,7 +852,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function assign($role, $userId)
+    public function assign($role, $userId): Assignment
     {
         $assignment = new Assignment([
             'userId' => $userId,
@@ -874,7 +874,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function revoke($role, $userId)
+    public function revoke($role, $userId): bool
     {
         if ($this->isEmptyUserId($userId)) {
             return false;
@@ -889,7 +889,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function revokeAll($userId)
+    public function revokeAll($userId): bool
     {
         if ($this->isEmptyUserId($userId)) {
             return false;
@@ -904,7 +904,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function removeAll()
+    public function removeAll(): void
     {
         $this->removeAllAssignments();
         $this->db->createCommand()->delete($this->itemChildTable)->execute();
@@ -916,7 +916,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function removeAllPermissions()
+    public function removeAllPermissions(): void
     {
         $this->removeAllItems(Item::TYPE_PERMISSION);
     }
@@ -924,7 +924,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function removeAllRoles()
+    public function removeAllRoles(): void
     {
         $this->removeAllItems(Item::TYPE_ROLE);
     }
@@ -934,7 +934,7 @@ class DbManager extends BaseManager
      *
      * @param int $type the auth item type (either Item::TYPE_PERMISSION or Item::TYPE_ROLE)
      */
-    protected function removeAllItems($type)
+    protected function removeAllItems($type): void
     {
         if (!$this->supportsCascadeUpdate()) {
             $names = (new Query())
@@ -962,7 +962,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function removeAllRules()
+    public function removeAllRules(): void
     {
         if (!$this->supportsCascadeUpdate()) {
             $this->db->createCommand()
@@ -982,7 +982,7 @@ class DbManager extends BaseManager
         $this->db->createCommand()->delete($this->assignmentTable)->execute();
     }
 
-    public function invalidateCache()
+    public function invalidateCache(): void
     {
         if ($this->cache !== null) {
             $this->cache->delete($this->cacheKey);
@@ -993,7 +993,7 @@ class DbManager extends BaseManager
         $this->_checkAccessAssignments = [];
     }
 
-    public function loadFromCache()
+    public function loadFromCache(): void
     {
         if ($this->items !== null || !$this->cache instanceof CacheInterface) {
             return;
@@ -1039,7 +1039,7 @@ class DbManager extends BaseManager
      * returned if role is not assigned to any user.
      * @since 2.0.7
      */
-    public function getUserIdsByRole($roleName)
+    public function getUserIdsByRole($roleName): array
     {
         if (empty($roleName)) {
             return [];
@@ -1055,7 +1055,7 @@ class DbManager extends BaseManager
      * @param mixed $userId
      * @return bool
      */
-    private function isEmptyUserId($userId)
+    private function isEmptyUserId($userId): bool
     {
         return !isset($userId) || $userId === '';
     }

@@ -42,5 +42,5 @@ abstract class Rule extends BaseObject
      * @param array $params parameters passed to [[CheckAccessInterface::checkAccess()]].
      * @return bool a value indicating whether the rule permits the auth item it is associated with.
      */
-    abstract public function execute($user, $item, $params);
+    abstract public function execute($user, $item, $params): bool;
 }
