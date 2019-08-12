@@ -234,6 +234,26 @@ interface ManagerInterface extends CheckAccessInterface
     public function getUserIdsByRole($roleName);
 
     /**
+     * Removes all authorization data, including roles, permissions, rules, and assignments.
+     */
+    public function removeAll();
+    /**
+     * Removes all permissions.
+     * All parent child relations will be adjusted accordingly.
+     */
+    public function removeAllPermissions();
+    /**
+     * Removes all roles.
+     * All parent child relations will be adjusted accordingly.
+     */
+    public function removeAllRoles();
+    /**
+     * Removes all rules.
+     * All roles and permissions which have rules will be adjusted accordingly.
+     */
+    public function removeAllRules();
+
+    /**
      * Removes all role assignments.
      */
     public function removeAllAssignments(): void;

@@ -417,6 +417,42 @@ abstract class ManagerTestCase extends TestCase
         $this->assertFalse($this->auth->canAddChild($reader, $author));
     }
 
+    public function testRemoveAllRules()
+    {
+        $this->prepareData();
+
+        $this->auth->removeAllRules();
+
+        $this->assertEmpty($this->auth->getRules());
+
+        $this->assertNotEmpty($this->auth->getRoles());
+        $this->assertNotEmpty($this->auth->getPermissions());
+    }
+
+    public function testRemoveAllRoles()
+    {
+        $this->prepareData();
+
+        $this->auth->removeAllRoles();
+
+        $this->assertEmpty($this->auth->getRoles());
+
+        $this->assertNotEmpty($this->auth->getRules());
+        $this->assertNotEmpty($this->auth->getPermissions());
+    }
+
+    public function testRemoveAllPermissions()
+    {
+        $this->prepareData();
+
+        $this->auth->removeAllPermissions();
+
+        $this->assertEmpty($this->auth->getPermissions());
+
+        $this->assertNotEmpty($this->auth->getRules());
+        $this->assertNotEmpty($this->auth->getRoles());
+    }
+
     public function RBACItemsProvider()
     {
         return [

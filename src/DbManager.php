@@ -904,6 +904,78 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
+    public function removeAll()
+    {
+        $this->removeAllAssignments();
+        $this->db->createCommand()->delete($this->itemChildTable)->execute();
+        $this->db->createCommand()->delete($this->itemTable)->execute();
+        $this->db->createCommand()->delete($this->ruleTable)->execute();
+        $this->invalidateCache();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeAllPermissions()
+    {
+        $this->removeAllItems(Item::TYPE_PERMISSION);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeAllRoles()
+    {
+        $this->removeAllItems(Item::TYPE_ROLE);
+    }
+
+    /**
+     * Removes all auth items of the specified type.
+     *
+     * @param int $type the auth item type (either Item::TYPE_PERMISSION or Item::TYPE_ROLE)
+     */
+    protected function removeAllItems($type)
+    {
+        if (!$this->supportsCascadeUpdate()) {
+            $names = (new Query())
+                ->select(['name'])
+                ->from($this->itemTable)
+                ->where(['type' => $type])
+                ->column($this->db);
+            if (empty($names)) {
+                return;
+            }
+            $key = $type == Item::TYPE_PERMISSION ? 'child' : 'parent';
+            $this->db->createCommand()
+                ->delete($this->itemChildTable, [$key => $names])
+                ->execute();
+            $this->db->createCommand()
+                ->delete($this->assignmentTable, ['item_name' => $names])
+                ->execute();
+        }
+        $this->db->createCommand()
+            ->delete($this->itemTable, ['type' => $type])
+            ->execute();
+        $this->invalidateCache();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function removeAllRules()
+    {
+        if (!$this->supportsCascadeUpdate()) {
+            $this->db->createCommand()
+                ->update($this->itemTable, ['rule_name' => null])
+                ->execute();
+        }
+        $this->db->createCommand()->delete($this->ruleTable)->execute();
+        $this->invalidateCache();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function removeAllAssignments(): void
     {
         $this->_checkAccessAssignments = [];
