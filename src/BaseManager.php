@@ -208,9 +208,9 @@ abstract class BaseManager extends Component implements ManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function getRoles(): array
+    public function getRoles(?int $externalId = null, ?int $attachedId = null): array
     {
-        return $this->getItems(Item::TYPE_ROLE);
+        return $this->getItems(Item::TYPE_ROLE, $externalId, $attachedId);
     }
 
     /**

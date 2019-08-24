@@ -66,9 +66,11 @@ interface ManagerInterface extends CheckAccessInterface
 
     /**
      * Returns all roles in the system.
+     * @param int|null $externalId
+     * @param int|null $attachedId
      * @return Role[] all roles in the system. The array is indexed by the role names.
      */
-    public function getRoles(): array;
+    public function getRoles(?int $externalId = null, ?int $attachedId = null): array;
 
     /**
      * Returns the roles that are assigned to the user via [[assign()]].
