@@ -229,7 +229,7 @@ interface ManagerInterface extends CheckAccessInterface
 
     /**
      * Returns all user IDs assigned to the role specified.
-     * @param string $roleName
+     * @param string|array $roleName
      * @return array array of user ID strings
      * @since 2.0.7
      */
